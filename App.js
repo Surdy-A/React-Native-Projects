@@ -1,21 +1,69 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import {
+  createAppContainer,
+} from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
+import { createBottomTabNavigator } from 'react-navigation-tabs';
+import Home from './Screens/Home';
+import Detail from './Screens/Detail';
+import Settings from './Screens/Settings';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+const HomeStack = createStackNavigator({
+  Home: {
+    screen: Home,
+    navigationOptions: { title: 'Home' },
+  },
+  Detail: {
+    screen: Detail,
+    navigationOptions: { title: 'Detail' },
   },
 });
+
+const SettingsStack = createStackNavigator({
+  Settings: {
+    screen: Settings,
+    navigationOptions: { title: 'Settings' },
+  },
+});
+
+const AppNavigator = createBottomTabNavigator(
+  {
+    Home: HomeStack,
+    Settings: SettingsStack,
+  },
+  {
+    initialRouteName: 'Home',
+    defaultNavigationOptions: ({ navigation }) => ({
+      // tabBarIcon: () => {
+      tabBarIcon: ({ tintColor }) => {
+        const { routeName } = navigation.state;
+        // const {isTransitioning} = navigation.state;
+        // const {key} = navigation.state;
+
+        // console.log(isTransitioning);
+        // console.log(key);
+
+        //console.log(navigation.state)
+
+        let iconName;
+        if (routeName === 'Home') {
+          //iconName = `ios-home`;
+          iconName = `${Platform.OS === 'ios' ? 'ios' : 'md'}-home`;
+        } else if (routeName === 'Settings') {
+          //iconName = `ios-settings`;
+          iconName = `${Platform.OS === 'ios' ? 'ios' : 'md'}-settings`;
+        }
+
+        return <Ionicons name={iconName} size={20} color={tintColor} />;
+      },
+      tabBarOptions: {
+        activeTintColor: 'blue',
+        inactiveTintColor: '#556',
+      },
+    }),
+  },
+);
+
+export default createAppContainer(AppNavigator);
